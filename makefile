@@ -2,14 +2,23 @@ GO=go
 
 OUTPUT=dist/service
 
-BUILD_TIME=`date +%FT%T%Z`
-GITHASH='git rev-parse HEAD'
-LDFLAGS=-ldflags "-X BuildInfo.BuildTime=$(VERSION) -X BuildInfo.Commit=$(GITHASH) -X main.test=$(GITHASH)"
-GITVERSION ?= $(shell git describe --tags)
-VERSION="1.0.abc"
-#GITHASH=$(git rev-parse HEAD)
+BUILDTIME=`date +%FT%T%Z`
+#GITHASH='git rev-parse HEAD'
+VERSION=1.0.abc
+LDFLAGS=-ldflags "-X main.test=$(GITHASH)"
+LDFLAGSOFF=-ldflags "-X BuildInfo.BuildTime=$(VERSION) -X BuildInfo.Commit=$(GITHASH) -X main.test=$(GITHASH)"
 
-GITHASH := $(if $(and $(wildcard .git),$(shell which git)), \
+GITVERSION ?=$(shell git describe --tags)
+GITHASH ?=$(shell git rev-parse HEAD)
+
+COMPILEFLAGS=-ldflags " \
+-X github.com/restSampleServices/go-service/BuildInfo.BuildTime=$(BUILDTIME) \
+-X github.com/restSampleServices/go-service/BuildInfo.Version=$(GITVERSION) \
+-X github.com/restSampleServices/go-service/BuildInfo.Commit=$(GITHASH) \
+-X main.test=$(GITHASH) \
+"
+
+#GITHASH := $(if $(and $(wildcard .git),$(shell which git)), \
     $(shell git rev-parse HEAD))
 
 go-version:
@@ -41,17 +50,23 @@ generate:
 build:
 ifdef GITHASH
 		@echo $(GITHASH)
+		@echo $(GITVERSION)
 else
 		@echo "Git not installed or not in a git repository"
 		#we can reference a environment variable from build pipeline here
-		GITHASH := "n.a."
+		GITHASH = "n.a."
 endif
 	@echo "start building ..."
-	@go build $(LDFLAGS) -o $(OUTPUT)
+	go build -v $(COMPILEFLAGS) -o $(OUTPUT)
+
+versioninfo:
+	@echo $(GITHASH)
+	@echo $(GITVERSION)
+	@echo $(VERSION)
+	@echo $(BUILDTIME)
 
 run:
-	@go run $(LDFLAGS) restSampleService.go
-	#@$(OUTPUT)
+	@go run $(COMPILEFLAGS) restSampleService.go
 
 test:
 	@echo "test ..."

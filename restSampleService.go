@@ -7,7 +7,10 @@ import (
 var test ="na"
 
 func main() {
-	fmt.Println("BuildInfo", test)
+	//fmt.Println("BuildInfo", test)
 
-	fmt.Println("BuildInfo", BuildInfo.BuildTime, BuildInfo.Version, BuildInfo.Commit)
+	fmt.Println("Version", BuildInfo.Version)
+	fmt.Println("Buildtime", BuildInfo.BuildTime)
+	fmt.Println("Commit", BuildInfo.Commit)
+
 }

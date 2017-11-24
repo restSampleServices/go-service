@@ -1,5 +1,5 @@
 package BuildInfo
 
-var BuildTime = "unknown"
+var BuildTime = "12345"
 var Commit = "n.a."
 var Version = "unknown"
