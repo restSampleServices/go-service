@@ -1,13 +1,16 @@
-GO=go
+VERSION=1.0
 
+#tools
+GO=go
 OUTPUT=dist/service
 
 BUILDTIME=`date +%FT%T%Z`
-VERSION=1.0.abc
 
-GITVERSION ?=$(if $(and $(wildcard .git),$(shell which git)),$(shell git describe --tags --abbrev=0))
+#grab build infos
+GITVERSION :=$(if $(and $(wildcard .git),$(shell which git)),$(shell git describe --tags --abbrev=0))
 GITHASH :=$(if $(and $(wildcard .git),$(shell which git)),$(shell git rev-parse HEAD))
 
+#application configuration
 COMPILEFLAGS=-ldflags " \
 -X github.com/restSampleServices/go-service/BuildInfo.BuildTime=$(BUILDTIME) \
 -X github.com/restSampleServices/go-service/BuildInfo.Version=$(GITVERSION) \
@@ -15,26 +18,30 @@ COMPILEFLAGS=-ldflags " \
 -X main.test=$(GITHASH) \
 "
 
+go-version:
+	@$(GO) version
+	@echo "make devenv|run|build|clean|test"
+
 ensureBuildinfo:
 ifdef GITHASH
-		@echo Commit: $(GITHASH)
 else
 		@echo "Git not installed or not in a git repository"
 		#we can reference a environment variable from build pipeline here
-		GITHASH:=n.a.
+		$(eval GITHASH=n.a.)
 endif
 
 ifdef GITVERSION
-		@echo Version: $(GITVERSION)
 else
 		@echo "Git not installed or not in a git repository or no Tag found"
-		GITVERSION=0.0.0
+		$(eval GITVERSION=0.0.0)
 endif
 
-go-version:
-	@$(GO) version
-	@echo "make build|clean|test"
-	@echo ${GITHASH}
+#used for debugging and in case of errors
+versioninfo: ensureBuildinfo
+	@echo Commit $(GITHASH)
+	@echo Git based Version $(GITVERSION)
+	@echo Make based Version $(VERSION)
+	@echo Build time $(BUILDTIME)
 
 prerequisites:
 	@echo "install prerequisites ..."
@@ -54,7 +61,7 @@ clean:
 	@if [ -d build ] ; then rm -rf build fi
 	@if [ -d vendor ] ; then rm -rf vendor; fi
 
-test-mockgen: 
+test-mockgen:
 	@echo "generating mocks ..."
 	@if [ ! -d mocks ] ; then mkdir -p  mocks; fi
 	@go generate ./...
@@ -62,12 +69,6 @@ test-mockgen:
 build: ensureBuildinfo
 	@echo "start building ..."
 	go build -v $(COMPILEFLAGS) -o $(OUTPUT)
-
-versioninfo:
-	@echo Commit $(GITHASH)
-	@echo Git based Version $(GITVERSION)
-	@echo Make based Version $(VERSION)
-	@echo Build time $(BUILDTIME)
 
 run: ensureBuildinfo
 	@echo "start application ..."
@@ -81,6 +82,6 @@ checkstyle:
 	@echo "stylecheck ..."
 	@golint ./...
 
-install: prerequisites dependencies test-mockgen
+devenv: prerequisites dependencies test-mockgen
 
 ci: install test checkstyle build
