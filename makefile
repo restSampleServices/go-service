@@ -84,4 +84,4 @@ checkstyle:
 
 devenv: prerequisites dependencies test-mockgen
 
-ci: install test checkstyle build
+ci: devenv test checkstyle build
