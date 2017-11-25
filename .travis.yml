@@ -1,0 +1,12 @@
+language: go
+cache: vendor
+go:
+  - 1.8
+  - 1.9
+  - master
+  
+# command to run tests
+script:
+  - make ci
+  #using the ./.coverage file which is created by py-cov / coverage
+  #- codeclimate-test-reporter
