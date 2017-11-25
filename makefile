@@ -76,7 +76,7 @@ run: ensureBuildinfo
 
 test:
 	@echo "test ..."
-	@$(GOTEST) -cover ./...
+	@$(GO) test -cover ./...
 
 checkstyle:
 	@echo "stylecheck ..."
