@@ -18,6 +18,8 @@ COMPILEFLAGS=-ldflags " \
 -X main.test=$(GITHASH) \
 "
 
+PKGS=$(go list ./... | grep -v /vendor/)
+
 go-version:
 	@$(GO) version
 	@echo "make devenv|run|build|clean|test"
@@ -45,10 +47,10 @@ versioninfo: ensureBuildinfo
 
 prerequisites:
 	@echo "install prerequisites ..."
-	@$(GO) get github.com/golang/mock/gomock
-	@$(GO) get github.com/golang/mock/mockgen
-	@$(GO) get github.com/golang/dep/cmd/dep
-	@$(GO) get github.com/golang/lint/golint
+	@$(GO) get -u github.com/golang/mock/gomock
+	@$(GO) get -u github.com/golang/mock/mockgen
+	@$(GO) get -u github.com/golang/dep/cmd/dep
+	@$(GO) get -u github.com/golang/lint/golint
 
 dependencies:
 	@echo "install dependencies..."
@@ -68,7 +70,7 @@ test-mockgen:
 
 build: ensureBuildinfo
 	@echo "start building ..."
-	go build -v $(COMPILEFLAGS) -o $(OUTPUT)
+	@go build -v $(COMPILEFLAGS) -o $(OUTPUT)
 
 run: ensureBuildinfo
 	@echo "start application ..."

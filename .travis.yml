@@ -4,9 +4,15 @@ go:
   - 1.8
   - 1.9
   - master
-  
-# command to run tests
+
+
+install:
+  - npm install -g codeclimate-test-reporter
+  - make prerequisites
+
 script:
   - make ci
-  #using the ./.coverage file which is created by py-cov / coverage
-  #- codeclimate-test-reporter
+  - ./dev/coverage.sh
+
+after_success:
+  #- codeclimate-test-reporter < coverage.txt

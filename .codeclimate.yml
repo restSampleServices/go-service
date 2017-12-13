@@ -1,3 +1,22 @@
-plugins:
+engines:
+  gofmt:
+    enabled: true
   govet:
     enabled: true
+  golint:
+    enabled: true
+ratings:
+  paths:
+    - "**.go"
+
+exclude_patterns:
+  - vendor/
+  - cmd/
+  - testdata
+  - "**_test.go"
+
+exclude_paths:
+  - vendor/
+  - cmd/
+  - testdata
+  - "**_test.go"
